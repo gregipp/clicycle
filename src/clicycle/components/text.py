@@ -8,7 +8,7 @@ from clicycle.components.base import Component
 from clicycle.theme import Theme
 
 
-class Text(Component):
+class Message(Component):
     """Base text component with automatic spacing and theming.
 
     The foundation for all text-based components. Handles message display with
@@ -26,7 +26,7 @@ class Text(Component):
     Example:
         >>> from clicycle import Clicycle, Theme
         >>> cli = Clicycle()
-        >>> text = Text(cli.theme, "Processing data...", "info")
+        >>> text = Message(cli.theme, "Processing data...", "info")
     """
 
     def __init__(self, theme: Theme, message: str, text_type: str = "info"):
@@ -75,7 +75,7 @@ class Text(Component):
         console.print(f"{indent}{icon} {self.message}", style=style)
 
 
-class Info(Text):
+class Info(Message):
     """Informational message component.
 
     Displays general information messages with standard styling.
@@ -97,7 +97,7 @@ class Info(Text):
         super().__init__(theme, message, "info")
 
 
-class Success(Text):
+class Success(Message):
     """Success message component with checkmark icon.
 
     Displays success messages with green styling and a checkmark icon.
@@ -119,7 +119,7 @@ class Success(Text):
         super().__init__(theme, message, "success")
 
 
-class Error(Text):
+class Error(Message):
     """Error message component with X icon.
 
     Displays error messages with red styling and an error icon.
@@ -141,7 +141,7 @@ class Error(Text):
         super().__init__(theme, message, "error")
 
 
-class WarningText(Text):
+class WarningText(Message):
     """Warning message component with warning icon.
 
     Displays warning messages with yellow/orange styling and a warning icon.
@@ -163,7 +163,7 @@ class WarningText(Text):
         super().__init__(theme, message, "warning")
 
 
-class ListItem(Text):
+class ListItem(Message):
     """List item component with bullet point.
 
     Displays text as a list item with automatic bullet point and indentation.
@@ -184,3 +184,42 @@ class ListItem(Text):
 
     def __init__(self, theme: Theme, message: str):
         super().__init__(theme, message, "list_item")
+
+
+class Text(Component):
+    """Plain text component without icon.
+
+    Displays text with the same styling as info but without the icon prefix.
+    Useful for labels, headers within sections, or any text that doesn't need
+    a status indicator.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: Text content to display
+
+    Example:
+        >>> import clicycle as cc
+        >>> cc.text("Remote")
+        >>> cc.table(data)
+    """
+
+    component_type = "text"
+
+    def __init__(self, theme: Theme, message: str):
+        super().__init__(theme)
+        if not isinstance(message, str):
+            raise TypeError(f"Message must be a string, got {type(message).__name__}")
+        if not message:
+            raise ValueError("Message cannot be empty")
+        self.message = message
+
+    def render(self, console: Console) -> None:
+        """Render the text message without icon.
+
+        Args:
+            console: Rich console instance for rendering
+        """
+        style = self.theme.typography.info_style
+        indent_spaces = getattr(self.theme.indentation, "info", 0)
+        indent = " " * indent_spaces
+        console.print(f"{indent}{self.message}", style=style)

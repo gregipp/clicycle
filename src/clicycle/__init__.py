@@ -21,6 +21,7 @@ from clicycle.theme import (
 
 if TYPE_CHECKING:
     # Type annotations for dynamically created convenience functions
+    def text(message: str) -> None: ...
     def info(message: str) -> None: ...
     def warning(message: str) -> None: ...
     def error(message: str) -> None: ...
@@ -62,7 +63,7 @@ if TYPE_CHECKING:
     ) -> str: ...
 
 
-__version__ = "3.1.6"
+__version__ = "3.2.0"
 
 # Core exports
 __all__ = [

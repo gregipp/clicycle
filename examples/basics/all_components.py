@@ -14,6 +14,8 @@ cc.info("This is an info message - general information")
 cc.success("This is a success message - operation completed")
 cc.error("This is an error message - something went wrong")
 cc.warning("This is a warning message - be careful")
+cc.text("This is plain text - no icon, just styled text")
+cc.text("Use text for paragraphs or labels that don't need a status icon. This command will sync your local configuration with the remote server. Any changes made locally will be uploaded, and any remote changes will be pulled down.")
 
 # List items
 cc.info("Here's a list of features:")

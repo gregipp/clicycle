@@ -43,10 +43,28 @@ cc.success("Complete!")
 # Text messages
 cc.info("Information message")
 cc.success("Operation successful")
-cc.error("Something went wrong") 
+cc.error("Something went wrong")
 cc.warning("Be careful")
+cc.text("Plain text without icon")
 cc.list_item("Bullet point")
+```
 
+### Plain Text
+
+Use `cc.text()` when you need styled text without a status icon. This is useful for labels, headers within sections, or any text that doesn't indicate a status. It uses the same styling as `cc.info()` but without the icon prefix.
+
+```python
+# Label tables or data sections
+cc.text("Remote")
+cc.table(remote_data)
+cc.text("Local")
+cc.table(local_data)
+
+# Display paragraphs or descriptive text
+cc.text("This command will sync your local configuration with the remote server. Any changes made locally will be uploaded, and any remote changes will be pulled down. Make sure you have saved your work before proceeding.")
+```
+
+```python
 # Structure
 cc.header("Title", "Subtitle", "App Name")
 cc.section("Section Name")

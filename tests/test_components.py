@@ -13,7 +13,7 @@ from clicycle.components.header import Header
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
 from clicycle.components.table import Table
-from clicycle.components.text import Error, ListItem, Success, Text, WarningText
+from clicycle.components.text import Error, ListItem, Message, Success, Text, WarningText
 from clicycle.theme import Theme
 
 
@@ -23,7 +23,7 @@ class TestBaseComponent:
     def test_get_spacing_before_no_previous(self):
         """Test spacing calculation with no previous component."""
         theme = Theme()
-        comp = Text(theme, "test", "info")
+        comp = Message(theme, "test", "info")
         comp.set_context(None)
         assert comp.get_spacing_before() == 0
 
@@ -32,8 +32,8 @@ class TestBaseComponent:
         theme = Theme()
         theme.spacing.info = {"error": 2}
 
-        prev_comp = Text(theme, "error", "error")
-        comp = Text(theme, "info", "info")
+        prev_comp = Message(theme, "error", "error")
+        comp = Message(theme, "info", "info")
         comp.set_context(prev_comp)
 
         assert comp.get_spacing_before() == 2
@@ -41,8 +41,8 @@ class TestBaseComponent:
     def test_get_spacing_before_default(self):
         """Test default spacing when no rule defined."""
         theme = Theme()
-        prev_comp = Text(theme, "test", "custom")
-        comp = Text(theme, "info", "info")
+        prev_comp = Message(theme, "test", "custom")
+        comp = Message(theme, "info", "info")
         comp.set_context(prev_comp)
 
         assert comp.get_spacing_before() == 1
@@ -54,7 +54,7 @@ class TestBaseComponent:
         prev_comp.component_type = "spinner"
         prev_comp.was_transient = True
 
-        comp = Text(theme, "info", "info")
+        comp = Message(theme, "info", "info")
         comp.set_context(prev_comp)
         # Default spacing is 1, reduced by 1 for transient = 0
         assert comp.get_spacing_before() == 0
@@ -92,33 +92,81 @@ class TestComponentBase:
             Component(theme)
 
 
-class TestText:
-    """Test the Text component."""
+class TestMessage:
+    """Test the Message component (base text with icon)."""
 
-    def test_text_render(self):
-        """Test text component rendering."""
+    def test_message_render(self):
+        """Test message component rendering."""
         theme = Theme()
         console = MagicMock(spec=Console)
 
-        text = Text(theme, "Hello", "info")
-        text.render(console)
+        msg = Message(theme, "Hello", "info")
+        msg.render(console)
 
         console.print.assert_called_once()
         call_args = console.print.call_args[0]
         assert "Hello" in str(call_args)
 
-    def test_text_with_indentation(self):
-        """Test text component with indentation."""
+    def test_message_with_indentation(self):
+        """Test message component with indentation."""
         theme = Theme()
         theme.indentation.info = 4
         console = MagicMock(spec=Console)
 
-        text = Text(theme, "Indented", "info")
-        text.render(console)
+        msg = Message(theme, "Indented", "info")
+        msg.render(console)
 
         console.print.assert_called_once()
         call_args = console.print.call_args[0]
         assert "    " in str(call_args)  # 4 spaces
+
+
+class TestText:
+    """Test the Text component (plain text without icon)."""
+
+    def test_text_render(self):
+        """Test plain text component rendering without icon."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        text = Text(theme, "Hello")
+        text.render(console)
+
+        console.print.assert_called_once()
+        call_args = console.print.call_args[0][0]
+        assert "Hello" in call_args
+        # Should NOT contain the info icon
+        assert theme.icons.info not in call_args
+
+    def test_text_with_indentation(self):
+        """Test plain text component with indentation."""
+        theme = Theme()
+        theme.indentation.info = 4
+        console = MagicMock(spec=Console)
+
+        text = Text(theme, "Indented")
+        text.render(console)
+
+        console.print.assert_called_once()
+        call_args = console.print.call_args[0][0]
+        assert "    " in call_args  # 4 spaces
+        assert "Indented" in call_args
+
+    def test_text_component_type(self):
+        """Test that Text has correct component_type."""
+        theme = Theme()
+        text = Text(theme, "Test")
+        assert text.component_type == "text"
+
+    def test_text_validation(self):
+        """Test Text validation for message."""
+        theme = Theme()
+
+        with pytest.raises(TypeError):
+            Text(theme, 123)  # Not a string
+
+        with pytest.raises(ValueError):
+            Text(theme, "")  # Empty string
 
 
 class TestTextComponents:
@@ -229,17 +277,17 @@ class TestSection:
         assert "SECTION TITLE" in str(call_args)  # Title is transformed to uppercase
 
 
-class TestListItem:
-    """Test list_item functionality through text component."""
+class TestListItemStyle:
+    """Test list_item functionality through Message component."""
 
     def test_list_item_style(self):
         """Test that list items use the list style."""
         theme = Theme()
         console = MagicMock(spec=Console)
 
-        # list_item creates a Text component with "list" style
-        text = Text(theme, "Item 1", "list")
-        text.render(console)
+        # list_item creates a Message component with "list" style
+        msg = Message(theme, "Item 1", "list")
+        msg.render(console)
 
         console.print.assert_called_once()
         call_args = console.print.call_args[0]
@@ -251,8 +299,8 @@ class TestListItem:
         theme.indentation.list = 6
         console = MagicMock(spec=Console)
 
-        text = Text(theme, "Indented item", "list")
-        text.render(console)
+        msg = Message(theme, "Indented item", "list")
+        msg.render(console)
 
         console.print.assert_called_once()
         call_args = console.print.call_args[0]
