@@ -8,6 +8,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.3] - 2026-01-09
+
+### Added
+
+- **Spinner transient parameter:** Added `transient` parameter to `cc.spinner()`
+  allowing per-spinner control over disappearing behavior, overriding theme's
+  `disappearing_spinners` setting. Use `cc.spinner("msg", transient=True)` to
+  make a spinner disappear when done regardless of theme configuration.
+
+## [3.2.2] - 2026-01-09
+
+### Fixed
+
+- Fixed test files using old Text component signature after cc.text() changes
+
+## [3.2.1] - 2026-01-09
+
+### Fixed
+
+- Fixed import sorting issues
+
+## [3.2.0] - 2026-01-09
+
+### Added
+
+- **Text Component:** Added `cc.text()` for displaying plain text without an icon
+
 ## [3.1.6] - 2025-10-05
 
 ### Fixed

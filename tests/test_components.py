@@ -443,3 +443,33 @@ class TestSpinner:
                 spinner=theme.spinner_type,
                 spinner_style=theme.typography.info_style,
             )
+
+    def test_spinner_transient_overrides_theme_false(self):
+        """Test transient=True overrides theme's disappearing_spinners=False."""
+        theme = Theme(disappearing_spinners=False)
+        console = MagicMock(spec=Console)
+
+        spinner = Spinner(theme, "Loading...", console, transient=True)
+        assert spinner._transient is True
+        assert spinner.was_transient is True
+
+    def test_spinner_transient_overrides_theme_true(self):
+        """Test transient=False overrides theme's disappearing_spinners=True."""
+        theme = Theme(disappearing_spinners=True)
+        console = MagicMock(spec=Console)
+
+        spinner = Spinner(theme, "Loading...", console, transient=False)
+        assert spinner._transient is False
+        assert spinner.was_transient is False
+
+    def test_spinner_transient_none_uses_theme(self):
+        """Test transient=None (default) uses theme setting."""
+        theme_true = Theme(disappearing_spinners=True)
+        theme_false = Theme(disappearing_spinners=False)
+        console = MagicMock(spec=Console)
+
+        spinner_true = Spinner(theme_true, "Loading...", console)
+        spinner_false = Spinner(theme_false, "Loading...", console)
+
+        assert spinner_true._transient is True
+        assert spinner_false._transient is False

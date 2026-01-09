@@ -80,6 +80,10 @@ with cc.spinner("Loading..."):
     # Your code here
     pass
 
+# Transient spinner (disappears when done, regardless of theme)
+with cc.spinner("Temporary...", transient=True):
+    pass
+
 with cc.progress("Processing") as prog:
     for i in range(100):
         prog.update(i, f"Item {i}")

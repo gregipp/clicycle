@@ -26,25 +26,33 @@ class Spinner(Component):
         theme: Theme configuration including spinner type and disappearing behavior
         message: Status message to display alongside the spinner
         console: Rich console instance for rendering
+        transient: Override theme's disappearing_spinners setting for this spinner
 
     Example:
         >>> import clicycle as cc
         >>> with cc.spinner("Loading data..."):
         ...     # Perform long operation
         ...     time.sleep(2)
-        >>> # Spinner disappears after context exits (if theme.disappearing_spinners=True)
+        >>> # Spinner disappears after context exits (if transient=True or theme.disappearing_spinners=True)
     """
 
     component_type = "spinner"
     deferred_render = True  # Don't render immediately, wait for context manager
 
-    def __init__(self, theme: Theme, message: str, console: Console):
+    def __init__(
+        self,
+        theme: Theme,
+        message: str,
+        console: Console,
+        transient: bool | None = None,
+    ):
         super().__init__(theme)
         self.message = message
         self.console = console
         self._context: Live | Status | None = None
-        # Mark as transient if using disappearing spinners
-        self.was_transient = theme.disappearing_spinners
+        # Use explicit transient if provided, otherwise fall back to theme
+        self._transient = transient if transient is not None else theme.disappearing_spinners
+        self.was_transient = self._transient
 
     def get_spacing_before(self) -> int:
         """Get normal spacing - spinners should have normal spacing before them."""
@@ -66,7 +74,7 @@ class Spinner(Component):
         if spacing > 0:
             self.console.print("\n" * spacing, end="")
 
-        if self.theme.disappearing_spinners:
+        if self._transient:
             # Create a grid table for spinner + text
             spinner = RichSpinner(
                 self.theme.spinner_type, style=self.theme.typography.info_style
@@ -117,7 +125,7 @@ class Spinner(Component):
             self._context.__exit__(exc_type, exc_val, exc_tb)
 
             # For non-disappearing spinners, print the final message
-            if not self.theme.disappearing_spinners:
+            if not self._transient:
                 self.console.print(
                     f"[{self.theme.typography.info_style}]{self.message}[/]"
                 )

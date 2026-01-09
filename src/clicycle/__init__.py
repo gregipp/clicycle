@@ -46,7 +46,7 @@ if TYPE_CHECKING:
         line_numbers: bool = True,
     ) -> None: ...
     def json(data: Any, title: str | None = None) -> None: ...
-    def spinner(message: str = "Processing") -> Spinner: ...
+    def spinner(message: str = "Processing", transient: bool | None = None) -> Spinner: ...
     def progress(description: str = "Processing") -> Any: ...
     def multi_progress(description: str = "Processing") -> Any: ...
     def group() -> Any: ...
@@ -63,7 +63,7 @@ if TYPE_CHECKING:
     ) -> str: ...
 
 
-__version__ = "3.2.2"
+__version__ = "3.2.3"
 
 # Core exports
 __all__ = [
@@ -150,8 +150,10 @@ class _ModuleInterface(ModuleType):
         # Create wrapper function based on component type
         if hasattr(component_class, "__enter__"):
             # Context managers need console
-            def context_wrapper(message: str) -> Any:
-                obj = component_class(self._cli.theme, message, self._cli.console)
+            def context_wrapper(message: str, **kwargs: Any) -> Any:
+                obj = component_class(
+                    self._cli.theme, message, self._cli.console, **kwargs
+                )
                 self._cli.stream.render(obj)
                 return obj
 
