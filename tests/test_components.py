@@ -13,7 +13,14 @@ from clicycle.components.header import Header
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
 from clicycle.components.table import Table
-from clicycle.components.text import Error, ListItem, Message, Success, Text, WarningText
+from clicycle.components.text import (
+    Error,
+    ListItem,
+    Message,
+    Success,
+    Text,
+    WarningText,
+)
 from clicycle.theme import Theme
 
 

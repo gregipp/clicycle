@@ -49,7 +49,7 @@ class Table(Component):
                 column_name,
                 width=width,
                 no_wrap=not self.wrap_text,
-                overflow="fold" if self.wrap_text else "ellipsis"
+                overflow="fold" if self.wrap_text else "ellipsis",
             )
 
         # Add rows
