@@ -6,7 +6,7 @@ from rich.console import Console
 
 import clicycle as cc
 from clicycle.clicycle import Clicycle
-from clicycle.components.text import Text
+from clicycle.components.text import Message
 from clicycle.modifiers.group import Group
 from clicycle.theme import Theme
 
@@ -18,8 +18,8 @@ class TestGroup:
         """Test Group initialization."""
         theme = Theme()
         components = [
-            Text(theme, "First", "info"),
-            Text(theme, "Second", "success"),
+            Message(theme, "First", "info"),
+            Message(theme, "Second", "success"),
         ]
 
         group = Group(theme, components)
