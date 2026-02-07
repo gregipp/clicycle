@@ -11,7 +11,7 @@
 **Clicycle** makes beautiful CLIs easy by treating terminal output as composable components.
 
 <p align="center">
-  <img src="docs/images/quickstart.svg" alt="Quick Start" width="600">
+  <img src="https://raw.githubusercontent.com/gregipp/clicycle/main/docs/images/quickstart.svg" alt="Quick Start" width="600">
 </p>
 
 ## Installation
@@ -159,7 +159,7 @@ cc.spacer(3)     # 3 blank lines
 ```
 
 <p align="center">
-  <img src="docs/images/components.svg" alt="Components" width="600">
+  <img src="https://raw.githubusercontent.com/gregipp/clicycle/main/docs/images/components.svg" alt="Components" width="600">
 </p>
 
 ### Layout Configuration
