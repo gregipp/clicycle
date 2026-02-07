@@ -76,7 +76,7 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.3.0"
+__version__ = "3.3.1"
 
 # Core exports
 __all__ = [
