@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Literal
 
 from rich import box as rich_box
+
+TitleAlign = Literal["left", "center", "right"]
 
 
 @dataclass
@@ -107,7 +110,7 @@ class Layout:
     """Layout configuration."""
 
     # Global
-    title_align: str = "left"  # "left", "center", "right"
+    title_align: TitleAlign = "left"
 
     # Table
     table_box: rich_box.Box = field(default_factory=lambda: rich_box.HEAVY_HEAD)
