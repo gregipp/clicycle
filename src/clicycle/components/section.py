@@ -44,7 +44,7 @@ class Section(Component):
             self.theme.typography.section_transform,
         )
         console.rule(
-            f"[cyan]{transformed_title}[/]",
-            style="dim bright_black",
+            f"[{self.theme.typography.section_style}]{transformed_title}[/]",
+            style=self.theme.layout.divider_style,
             align="right",
         )

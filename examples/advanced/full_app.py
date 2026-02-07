@@ -7,9 +7,13 @@ import time
 
 from clicycle import Clicycle
 from clicycle.components.code import Code, json_code
+from clicycle.components.divider import Divider
 from clicycle.components.header import Header
+from clicycle.components.key_value import KeyValue
+from clicycle.components.panel import Panel
 from clicycle.components.progress import ProgressBar
 from clicycle.components.section import Section
+from clicycle.components.spacer import Spacer
 from clicycle.components.spinner import Spinner
 from clicycle.components.table import Table
 from clicycle.components.text import Error, Info, ListItem, Success, WarningText
@@ -247,16 +251,52 @@ def showcase_progress_bars(cli):
         cli.stream.render(Success(cli.theme, f"{task} complete"))
 
 
-def showcase_statistics(cli):
-    """Demonstrate statistics display."""
-    cli.stream.render(Section(cli.theme, "Statistics Display"))
+def showcase_structural_components(cli):
+    """Demonstrate panels, key-value pairs, dividers, and spacers."""
+    cli.stream.render(Section(cli.theme, "Structural Components"))
 
-    cli.stream.render(Info(cli.theme, "Total Files: 1250"))
-    cli.stream.render(Info(cli.theme, "Processed: 1248"))
-    cli.stream.render(Info(cli.theme, "Failed: 2"))
-    cli.stream.render(Info(cli.theme, "Success Rate: 99.84%"))
-    cli.stream.render(Info(cli.theme, "Processing Time: 2m 34s"))
-    cli.stream.render(Info(cli.theme, "Average Speed: 8.1 files/sec"))
+    cli.stream.render(
+        Panel(cli.theme, "All systems operational.", title="Status")
+    )
+
+    cli.stream.render(Spacer(cli.theme))
+
+    cli.stream.render(
+        Panel(
+            cli.theme,
+            "Rate limit approaching threshold.",
+            title="Warning",
+            subtitle="Updated 2m ago",
+        )
+    )
+
+    cli.stream.render(Divider(cli.theme))
+
+    cli.stream.render(
+        KeyValue(
+            cli.theme,
+            {
+                "Total Files": "1250",
+                "Processed": "1248",
+                "Failed": "2",
+                "Success Rate": "99.84%",
+            },
+            title="Processing Stats",
+        )
+    )
+
+    cli.stream.render(Spacer(cli.theme, lines=2))
+
+    cli.stream.render(
+        KeyValue(
+            cli.theme,
+            [
+                ("Processing Time", "2m 34s"),
+                ("Average Speed", "8.1 files/sec"),
+            ],
+            title="Performance",
+        )
+    )
 
 
 def showcase_spacing_behavior(cli):
@@ -331,7 +371,7 @@ def main():
     showcase_progress_bars(cli)
     time.sleep(1)
 
-    showcase_statistics(cli)
+    showcase_structural_components(cli)
     time.sleep(1)
 
     showcase_spacing_behavior(cli)

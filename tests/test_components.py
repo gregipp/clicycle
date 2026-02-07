@@ -283,6 +283,23 @@ class TestSection:
         # Check the actual call content
         assert "SECTION TITLE" in str(call_args)  # Title is transformed to uppercase
 
+    def test_section_uses_theme_styles(self):
+        """Test that section uses theme styles instead of hardcoded values."""
+        from clicycle.theme import Layout, Typography
+
+        theme = Theme(
+            typography=Typography(section_style="bold magenta"),
+            layout=Layout(divider_style="dim cyan"),
+        )
+        console = MagicMock(spec=Console)
+
+        section = Section(theme, "Test")
+        section.render(console)
+
+        call_args = console.rule.call_args
+        assert "bold magenta" in str(call_args[0][0])
+        assert call_args[1]["style"] == "dim cyan"
+
 
 class TestListItemStyle:
     """Test list_item functionality through Message component."""
@@ -330,6 +347,28 @@ class TestTable:
         # Should create a Rich Table
         call_args = console.print.call_args[0]
         assert isinstance(call_args[0], RichTable)
+
+    def test_table_expand_defaults_to_theme(self):
+        """Test that table expand defaults to theme setting."""
+        from clicycle.theme import Layout
+
+        theme = Theme(layout=Layout(table_expand=True))
+        data = [{"name": "Alice"}]
+        table = Table(theme, data)
+        assert table.expand is True
+
+        theme_no_expand = Theme(layout=Layout(table_expand=False))
+        table2 = Table(theme_no_expand, data)
+        assert table2.expand is False
+
+    def test_table_expand_explicit_override(self):
+        """Test that explicit expand overrides theme."""
+        from clicycle.theme import Layout
+
+        theme = Theme(layout=Layout(table_expand=True))
+        data = [{"name": "Alice"}]
+        table = Table(theme, data, expand=False)
+        assert table.expand is False
 
     def test_table_empty(self):
         """Test table with no data."""

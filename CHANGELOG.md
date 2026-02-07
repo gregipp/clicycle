@@ -8,6 +8,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2026-02-07
+
+### Added
+
+- **Panel component:** Bordered content boxes with optional title and subtitle.
+  `cc.panel("Content", title="Title", subtitle="Footer")`
+- **Key-value component:** Dashboard-style aligned label:value displays.
+  `cc.key_value({"Host": "prod-01", "CPU": "23%"})` — accepts dict or list of
+  tuples
+- **Spacer component:** Explicit vertical whitespace that bypasses automatic
+  spacing. `cc.spacer()` for 1 line, `cc.spacer(3)` for multiple
+- **Divider component:** Subtle horizontal rule for visual separation.
+  `cc.divider()` — uses `Layout.divider_style`
+- **`Layout.title_align`:** Global title alignment for panels, tables, and
+  key-value components (default: `"left"`)
+- **`Layout.table_expand`:** Tables expand to fill available width by default
+- **`Layout.panel_box`**, **`Layout.panel_border_style`**,
+  **`Layout.panel_expand`:** Panel appearance configuration
+- **`Layout.divider_style`:** Divider color configuration
+
+### Changed
+
+- Section component now uses `theme.typography.section_style` and
+  `theme.layout.divider_style` for consistent theme integration
+- Table `expand` defaults to `theme.layout.table_expand` (true by default)
+
 ## [3.2.3] - 2026-01-09
 
 ### Added

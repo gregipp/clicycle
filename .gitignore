@@ -53,6 +53,7 @@ site/
 .*.swp
 .*.swo
 
-# Claude
+# AI tools
+.claude/
 CLAUDE.md
 CLAUDE_CODE_PYTHON_RULES.md

@@ -61,9 +61,22 @@ if TYPE_CHECKING:
     def select_list(
         item_name: str, options: list[str], default: str | None = None
     ) -> str: ...
+    def panel(
+        content: str,
+        title: str | None = None,
+        subtitle: str | None = None,
+        expand: bool | None = None,
+    ) -> None: ...
+    def key_value(
+        data: dict[str, str | int | float | bool | None]
+        | list[tuple[str, str | int | float | bool | None]],
+        title: str | None = None,
+    ) -> None: ...
+    def spacer(lines: int = 1) -> None: ...
+    def divider() -> None: ...
 
 
-__version__ = "3.2.3"
+__version__ = "3.3.0"
 
 # Core exports
 __all__ = [

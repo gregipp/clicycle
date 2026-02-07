@@ -10,7 +10,17 @@ from clicycle.theme import Theme
 
 
 class Table(Component):
-    """Table component - displays data in tabular format."""
+    """Table component - displays data in tabular format.
+
+    Args:
+        theme: Theme configuration for styling
+        data: List of dictionaries representing rows
+        title: Optional table title
+        column_widths: Optional dict mapping column names to widths
+        wrap_text: Whether to wrap text or use ellipsis (default: True)
+        expand: Whether to expand table to fill available width (default: False)
+        width: Fixed width for the table (default: None, uses content width)
+    """
 
     component_type = "table"
 
@@ -21,12 +31,16 @@ class Table(Component):
         title: str | None = None,
         column_widths: dict[str, int] | None = None,
         wrap_text: bool = True,
+        expand: bool | None = None,
+        width: int | None = None,
     ):
         super().__init__(theme)
         self.data = data
         self.title = title
         self.column_widths = column_widths or {}
         self.wrap_text = wrap_text
+        self.expand = expand if expand is not None else theme.layout.table_expand
+        self.width = width
 
     def render(self, console: Console) -> None:
         """Render data as a table."""
@@ -35,10 +49,13 @@ class Table(Component):
 
         table = RichTable(
             title=self.title,
+            title_justify=self.theme.layout.title_align,
             box=self.theme.layout.table_box,
             border_style=self.theme.layout.table_border_style,
             title_style=self.theme.typography.header_style,
             header_style=self.theme.typography.label_style,
+            expand=self.expand,
+            width=self.width,
         )
 
         # Add columns with optional width and configurable wrapping

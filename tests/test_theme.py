@@ -62,17 +62,37 @@ class TestLayout:
         """Test default layout values."""
         layout = Layout()
 
+        assert layout.title_align == "left"
         assert layout.table_box == rich_box.HEAVY_HEAD
         assert layout.table_border_style == "bright_black"
+        assert layout.table_expand is True
+        assert layout.panel_box == rich_box.ROUNDED
+        assert layout.panel_border_style == "bright_black"
+        assert layout.panel_expand is True
+        assert layout.divider_style == "bright_black"
         assert layout.url_style == "full"
 
     def test_custom_layout(self):
         """Test custom layout values."""
-        layout = Layout(table_box=rich_box.ROUNDED, table_border_style="blue")
+        layout = Layout(
+            title_align="center",
+            table_box=rich_box.ROUNDED,
+            table_border_style="blue",
+            table_expand=False,
+            panel_box=rich_box.DOUBLE,
+            panel_border_style="cyan",
+            panel_expand=False,
+            divider_style="dim white",
+        )
 
+        assert layout.title_align == "center"
         assert layout.table_box == rich_box.ROUNDED
         assert layout.table_border_style == "blue"
-        # Default should still work
+        assert layout.table_expand is False
+        assert layout.panel_box == rich_box.DOUBLE
+        assert layout.panel_border_style == "cyan"
+        assert layout.panel_expand is False
+        assert layout.divider_style == "dim white"
         assert layout.url_style == "full"
 
 

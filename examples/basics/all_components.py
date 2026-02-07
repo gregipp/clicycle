@@ -24,6 +24,30 @@ cc.list_item("Rich formatting and colors")
 cc.list_item("Disappearing spinners")
 cc.list_item("Progress bars with descriptions")
 
+# Structural components
+cc.section("Structural Components")
+
+cc.panel("System operating normally. All services healthy.", title="Status")
+
+cc.spacer()
+
+cc.panel(
+    "Rate limit approaching threshold. Consider scaling.",
+    title="Warning",
+    subtitle="Updated 2m ago",
+)
+
+cc.divider()
+
+cc.key_value({"Status": "Online", "Uptime": "14d 3h", "Version": "2.4.1"})
+
+cc.spacer(2)
+
+cc.key_value(
+    [("Host", "prod-01"), ("Region", "us-east"), ("Load", "42%")],
+    title="Server Info",
+)
+
 # Data display
 cc.section("Data Display")
 

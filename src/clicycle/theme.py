@@ -106,9 +106,21 @@ class Typography:
 class Layout:
     """Layout configuration."""
 
+    # Global
+    title_align: str = "left"  # "left", "center", "right"
+
     # Table
     table_box: rich_box.Box = field(default_factory=lambda: rich_box.HEAVY_HEAD)
     table_border_style: str = "bright_black"
+    table_expand: bool = True
+
+    # Panel
+    panel_box: rich_box.Box = field(default_factory=lambda: rich_box.ROUNDED)
+    panel_border_style: str = "bright_black"
+    panel_expand: bool = True
+
+    # Divider
+    divider_style: str = "bright_black"
 
     # URL display
     url_style: str = "full"  # "full", "domain", "compact"
@@ -140,6 +152,13 @@ class ComponentSpacing:
             "info": 0,
             "debug": 0,
             "list_item": 0,
+        }
+    )
+    panel: dict[str, int] = field(default_factory=dict)
+    key_value: dict[str, int] = field(default_factory=dict)
+    divider: dict[str, int] = field(
+        default_factory=lambda: {
+            "divider": 0,
         }
     )
 

@@ -6,63 +6,40 @@ This directory contains example scripts demonstrating various features and use c
 
 Make sure you have Clicycle installed (see [README](../README.md))
 
-Then run any example:
+Run the interactive example menu:
 
 ```bash
-python examples/basic_usage.py
-python examples/theming_example.py
-python examples/click_integration.py --help
+python examples/menu.py
+```
+
+Or run any example directly:
+
+```bash
+python examples/basics/hello_world.py
+python examples/features/themes.py
+python examples/advanced/full_app.py
 ```
 
 ## Available Examples
 
-### 1. Basic Usage (`basic_usage.py`)
+### Basics
 
-**What it shows:** Core Clicycle components in action
-**Run with:** `python examples/basic_usage.py`
+- **`basics/hello_world.py`** — Simple introduction to headers, messages, and tables
+- **`basics/all_components.py`** — Tour of all components
 
-Demonstrates:
+### Features
 
-- Headers and sections
-- Message types (info, success, warning, error)
-- Data tables and summaries
-- Code highlighting and JSON formatting
-- Progress bars and spinners
+- **`features/interactive.py`** — Arrow-key selection and multi-select menus
+- **`features/spinners.py`** — Disappearing spinner functionality
+- **`features/themes.py`** — Custom themes (emoji, minimal, matrix)
+- **`features/groups.py`** — Grouping components without spacing
+- **`features/prompts.py`** — User input prompts and confirmations
+- **`features/validation.py`** — Input validation and error handling
 
-### 2. Theming (`theming_example.py`)
+### Advanced
 
-**What it shows:** How to customize Clicycle's appearance
-**Run with:** `python examples/theming_example.py`
-
-Demonstrates:
-
-- Default theme
-- Custom emoji theme
-- Minimal text-only theme
-- Corporate professional theme
-
-### 3. Click Integration (`click_integration.py`)
-
-**What it shows:** Full CLI application combining Click and Clicycle
-**Run with:** `python examples/click_integration.py --help`
-
-Try these commands:
-
-```bash
-python examples/click_integration.py status
-```
-
-```bash
-python examples/click_integration.py process -i /input -o /output --dry-run
-```
-
-```bash
-python examples/click_integration.py validate -p /some/path
-```
-
-```bash
-python examples/click_integration.py report --format json
-```
+- **`advanced/full_app.py`** — Complete application showcase
+- **`advanced/full_app_debug.py`** — Full app with debug logging enabled
 
 ## What to Look For
 

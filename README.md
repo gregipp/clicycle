@@ -1,7 +1,7 @@
 # Clicycle
 
-[![CI](https://github.com/Living-Content/clicycle/actions/workflows/ci.yml/badge.svg)](https://github.com/Living-Content/clicycle/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/Living-Content/clicycle/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Living-Content/clicycle)
+[![CI](https://github.com/gregipp/clicycle/actions/workflows/ci.yml/badge.svg)](https://github.com/gregipp/clicycle/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/gregipp/clicycle/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/gregipp/clicycle)
 [![PyPI version](https://img.shields.io/pypi/v/clicycle)](https://pypi.org/project/clicycle/)
 [![Python Versions](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](https://pypi.org/project/clicycle/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,6 +9,10 @@
 > Component-based CLI rendering with automatic spacing and Rich styling
 
 **Clicycle** makes beautiful CLIs easy by treating terminal output as composable components.
+
+<p align="center">
+  <img src="docs/images/quickstart.svg" alt="Quick Start" width="600">
+</p>
 
 ## Installation
 
@@ -133,6 +137,49 @@ cc.table(
     column_widths={"Project ID": 40, "Status": 15},
     wrap_text=False
 )
+```
+
+### Structural Components
+
+```python
+# Panel — bordered content box
+cc.panel("All systems operational.", title="Status")
+cc.panel("Rate limit at 80%", title="Warning", subtitle="Updated 2m ago")
+
+# Key-value pairs — aligned label:value display
+cc.key_value({"Host": "prod-01", "Uptime": "14d 3h", "CPU": "23%"})
+cc.key_value([("Region", "us-east"), ("Zone", "a")], title="Server")
+
+# Divider — subtle horizontal rule
+cc.divider()
+
+# Spacer — explicit blank lines (bypasses automatic spacing)
+cc.spacer()      # 1 blank line
+cc.spacer(3)     # 3 blank lines
+```
+
+<p align="center">
+  <img src="docs/images/components.svg" alt="Components" width="600">
+</p>
+
+### Layout Configuration
+
+Control alignment, borders, and expansion through `Layout`:
+
+```python
+from clicycle import Theme, Layout
+
+theme = Theme(
+    layout=Layout(
+        title_align="left",           # "left", "center", "right"
+        table_expand=True,            # Tables fill available width
+        panel_box=rich_box.ROUNDED,   # Panel border style
+        panel_border_style="cyan",    # Panel border color
+        panel_expand=True,            # Panels fill available width
+        divider_style="bright_black", # Divider color
+    )
+)
+cc.configure(theme=theme)
 ```
 
 ### Configuration
@@ -292,55 +339,17 @@ python examples/menu.py
 
 Or explore individual examples:
 
-### Basics
-
-- `basics/hello_world.py` - Simple introduction
-- `basics/all_components.py` - Tour of all components
-
-### Feature
-
-- `features/interactive.py` - Arrow-key selection and checkboxes
-- `features/spinners.py` - Disappearing spinner functionality
-- `features/themes.py` - Custom themes (emoji, minimal, matrix)
-
-### Advanced
-
-- `advanced/full_app.py` - Complete application showcase
-
-### Hello World
-
-```python
-import clicycle as cc
-import time
-
-# Build a simple CLI
-cc.header("My App", "v1.0.0")
-cc.info("Processing data...")
-
-with cc.spinner("Loading..."):
-    time.sleep(2)
-    
-cc.success("Complete!")
-cc.table([{"Name": "Alice", "Score": 95}, {"Name": "Bob", "Score": 87}])
-```
+- `basics/hello_world.py` — Simple introduction
+- `basics/all_components.py` — Tour of all components
+- `features/interactive.py` — Arrow-key selection and checkboxes
+- `features/spinners.py` — Disappearing spinner functionality
+- `features/themes.py` — Custom themes (emoji, minimal, matrix)
+- `features/groups.py` — Grouping components without spacing
+- `advanced/full_app.py` — Complete application showcase
 
 ## Bundling with PyInstaller
 
 See [docs/PYINSTALLER.md](docs/PYINSTALLER.md) for instructions on bundling Clicycle apps with PyInstaller.
-
-## Coming Soon
-
-### v3.2 - Theme Presets
-
-- **DefaultTheme**: Balanced, professional appearance
-- **CompactTheme**: Minimal spacing for dense output
-- **ColorfulTheme**: Vibrant colors and icons
-- **MonochromeTheme**: No colors, perfect for logs
-
-### v3.3 - Enhanced Components
-
-- **Panel/Card Component**: Boxed content with borders and padding
-- **Tree Component**: Hierarchical data display (file trees, org charts)
 
 ## License
 
