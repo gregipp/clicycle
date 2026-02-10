@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     def table(
         data: list[dict[str, Any]],
         title: str | None = None,
+        page_size: int | None = None,
         **kwargs: Any,
     ) -> None: ...
     def header(
@@ -89,7 +90,7 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.3.3"
+__version__ = "3.4.0"
 
 # Core exports
 __all__ = [

@@ -381,6 +381,174 @@ class TestTable:
         # Empty table returns early and doesn't print anything
         console.print.assert_not_called()
 
+    def test_table_page_size_none_renders_normally(self):
+        """Test that page_size=None renders without pagination."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(5)]
+        table = Table(theme, data, page_size=None)
+        table.render(console)
+
+        # Single print call with RichTable (no pagination)
+        assert console.print.call_count == 1
+        assert isinstance(console.print.call_args[0][0], RichTable)
+
+    def test_table_page_size_fits_one_page(self):
+        """Test that data fitting in one page renders without pagination."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(3)]
+        table = Table(theme, data, page_size=5)
+        table.render(console)
+
+        # Single print call (no pagination needed)
+        assert console.print.call_count == 1
+        assert isinstance(console.print.call_args[0][0], RichTable)
+
+    def test_table_page_size_stores_attribute(self):
+        """Test that page_size is stored on the Table instance."""
+        theme = Theme()
+        data = [{"name": "Alice"}]
+        table = Table(theme, data, page_size=10)
+        assert table.page_size == 10
+
+    def test_table_page_size_default_is_none(self):
+        """Test that page_size defaults to None."""
+        theme = Theme()
+        data = [{"name": "Alice"}]
+        table = Table(theme, data)
+        assert table.page_size is None
+
+    @patch("clicycle.interactive.select.interactive_select")
+    def test_table_pagination_renders_pages(self, mock_select):
+        """Test paginated table renders current page and navigates."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(5)]
+        table = Table(theme, data, page_size=2)
+
+        # User selects "Next", then "Done"
+        mock_select.side_effect = ["next", "done"]
+        table.render(console)
+
+        # First page: table + info line, Second page: table + info line
+        table_calls = [
+            c for c in console.print.call_args_list
+            if len(c.args) > 0 and isinstance(c.args[0], RichTable)
+        ]
+        assert len(table_calls) == 2
+
+        # Info lines should contain page numbers
+        info_calls = [
+            c for c in console.print.call_args_list
+            if len(c.args) > 0 and isinstance(c.args[0], str) and "Page" in c.args[0]
+        ]
+        assert len(info_calls) == 2
+        assert "Page 1 of 3" in info_calls[0].args[0]
+        assert "Page 2 of 3" in info_calls[1].args[0]
+
+    @patch("clicycle.interactive.select.interactive_select")
+    def test_table_pagination_previous(self, mock_select):
+        """Test paginated table previous navigation."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(6)]
+        table = Table(theme, data, page_size=2)
+
+        # Go next, then previous, then done
+        mock_select.side_effect = ["next", "previous", "done"]
+        table.render(console)
+
+        info_calls = [
+            c for c in console.print.call_args_list
+            if len(c.args) > 0 and isinstance(c.args[0], str) and "Page" in c.args[0]
+        ]
+        assert len(info_calls) == 3
+        assert "Page 1 of 3" in info_calls[0].args[0]
+        assert "Page 2 of 3" in info_calls[1].args[0]
+        assert "Page 1 of 3" in info_calls[2].args[0]
+
+    @patch("clicycle.interactive.select.interactive_select")
+    def test_table_pagination_done_immediately(self, mock_select):
+        """Test paginated table done on first page."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(4)]
+        table = Table(theme, data, page_size=2)
+
+        mock_select.return_value = "done"
+        table.render(console)
+
+        # Only one page rendered
+        table_calls = [
+            c for c in console.print.call_args_list
+            if len(c.args) > 0 and isinstance(c.args[0], RichTable)
+        ]
+        assert len(table_calls) == 1
+
+    @patch("clicycle.interactive.select.interactive_select")
+    def test_table_pagination_options_first_page(self, mock_select):
+        """Test navigation options on first page (no Previous)."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(4)]
+        table = Table(theme, data, page_size=2)
+
+        mock_select.return_value = "done"
+        table.render(console)
+
+        # First page should have Next and Done but not Previous
+        options = mock_select.call_args[0][1]
+        labels = [o["label"] for o in options]
+        assert "Next →" in labels
+        assert "Done" in labels
+        assert "← Previous" not in labels
+
+    @patch("clicycle.interactive.select.interactive_select")
+    def test_table_pagination_options_last_page(self, mock_select):
+        """Test navigation options on last page (no Next)."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(4)]
+        table = Table(theme, data, page_size=2)
+
+        # Go to last page, then done
+        mock_select.side_effect = ["next", "done"]
+        table.render(console)
+
+        # Last call should have Previous and Done but not Next
+        last_options = mock_select.call_args_list[-1][0][1]
+        labels = [o["label"] for o in last_options]
+        assert "← Previous" in labels
+        assert "Done" in labels
+        assert "Next →" not in labels
+
+    @patch("clicycle.interactive.select.interactive_select")
+    def test_table_pagination_item_count(self, mock_select):
+        """Test that pagination info shows total item count."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        data = [{"name": f"User{i}"} for i in range(7)]
+        table = Table(theme, data, page_size=3)
+
+        mock_select.return_value = "done"
+        table.render(console)
+
+        info_calls = [
+            c for c in console.print.call_args_list
+            if len(c.args) > 0 and isinstance(c.args[0], str) and "items" in c.args[0]
+        ]
+        assert len(info_calls) == 1
+        assert "7 items" in info_calls[0].args[0]
+
 
 class TestCode:
     """Test the Code component."""
