@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from typing import Any
 
 from rich.console import Console
 from rich.table import Table as RichTable
@@ -91,12 +92,14 @@ class Table(Component):
         """Render table with interactive page navigation."""
         from clicycle.interactive.select import interactive_select
 
-        total_pages = math.ceil(len(self.data) / self.page_size)
+        assert self.page_size is not None
+        page_size = self.page_size
+        total_pages = math.ceil(len(self.data) / page_size)
         current_page = 0
 
         while True:
-            start = current_page * self.page_size
-            end = start + self.page_size
+            start = current_page * page_size
+            end = start + page_size
             page_rows = self.data[start:end]
 
             console.print(self._build_table(page_rows))
@@ -105,7 +108,7 @@ class Table(Component):
                 style="dim",
             )
 
-            options: list[dict[str, str]] = []
+            options: list[str | dict[str, Any]] = []
             if current_page < total_pages - 1:
                 options.append({"label": "Next →", "value": "next"})
             if current_page > 0:
