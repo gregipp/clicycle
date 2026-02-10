@@ -51,7 +51,9 @@ class Spinner(Component):
         self.console = console
         self._context: Live | Status | None = None
         # Use explicit transient if provided, otherwise fall back to theme
-        self._transient = transient if transient is not None else theme.disappearing_spinners
+        self._transient = (
+            transient if transient is not None else theme.disappearing_spinners
+        )
         self.was_transient = self._transient
 
     def get_spacing_before(self) -> int:

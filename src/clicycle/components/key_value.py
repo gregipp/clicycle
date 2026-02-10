@@ -31,7 +31,8 @@ class KeyValue(Component):
     def __init__(
         self,
         theme: Theme,
-        data: dict[str, str | int | float | bool | None] | list[tuple[str, str | int | float | bool | None]],
+        data: dict[str, str | int | float | bool | None]
+        | list[tuple[str, str | int | float | bool | None]],
         title: str | None = None,
     ):
         super().__init__(theme)

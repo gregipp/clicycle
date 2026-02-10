@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import select as select_module
 import sys
 import termios
 import tty
@@ -36,21 +37,28 @@ class _BaseRenderer(ABC):
         ]
 
     def _get_key(self) -> str:
-        """Read a single keypress, handling arrow keys."""
+        """Read a single keypress, handling arrow keys and bare Escape."""
         key = sys.stdin.read(1)
-        if key == "\x1b":  # ESC sequence
-            key2 = sys.stdin.read(1)
-            if key2 == "[":
-                key3 = sys.stdin.read(1)
-                if key3 == "A":
-                    return "up"
-                if key3 == "B":
-                    return "down"
-        elif key in ("\r", "\n"):
+        if key == "\x1b":
+            # Wait briefly for arrow key sequence; bare ESC if nothing follows
+            try:
+                has_more = bool(select_module.select([sys.stdin], [], [], 0.05)[0])
+            except (OSError, ValueError):
+                has_more = True  # Assume arrow key in non-TTY contexts
+            if has_more:
+                key2 = sys.stdin.read(1)
+                if key2 == "[":
+                    key3 = sys.stdin.read(1)
+                    if key3 == "A":
+                        return "up"
+                    if key3 == "B":
+                        return "down"
+            return "quit"
+        if key in ("\r", "\n"):
             return "enter"
-        elif key == " ":
+        if key == " ":
             return "space"
-        elif key in ("\x03", "q"):
+        if key in ("\x03", "q"):
             return "quit"
         return ""
 

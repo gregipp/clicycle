@@ -48,7 +48,9 @@ class Table(Component):
         self.width = width
         self.page_size = page_size
 
-    def _build_table(self, rows: list[dict[str, str | int | float | bool | None]]) -> RichTable:
+    def _build_table(
+        self, rows: list[dict[str, str | int | float | bool | None]]
+    ) -> RichTable:
         """Build a Rich table from a slice of rows."""
         table = RichTable(
             title=self.title,

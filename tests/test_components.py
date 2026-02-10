@@ -436,14 +436,16 @@ class TestTable:
 
         # First page: table + info line, Second page: table + info line
         table_calls = [
-            c for c in console.print.call_args_list
+            c
+            for c in console.print.call_args_list
             if len(c.args) > 0 and isinstance(c.args[0], RichTable)
         ]
         assert len(table_calls) == 2
 
         # Info lines should contain page numbers
         info_calls = [
-            c for c in console.print.call_args_list
+            c
+            for c in console.print.call_args_list
             if len(c.args) > 0 and isinstance(c.args[0], str) and "Page" in c.args[0]
         ]
         assert len(info_calls) == 2
@@ -464,7 +466,8 @@ class TestTable:
         table.render(console)
 
         info_calls = [
-            c for c in console.print.call_args_list
+            c
+            for c in console.print.call_args_list
             if len(c.args) > 0 and isinstance(c.args[0], str) and "Page" in c.args[0]
         ]
         assert len(info_calls) == 3
@@ -486,7 +489,8 @@ class TestTable:
 
         # Only one page rendered
         table_calls = [
-            c for c in console.print.call_args_list
+            c
+            for c in console.print.call_args_list
             if len(c.args) > 0 and isinstance(c.args[0], RichTable)
         ]
         assert len(table_calls) == 1
@@ -543,7 +547,8 @@ class TestTable:
         table.render(console)
 
         info_calls = [
-            c for c in console.print.call_args_list
+            c
+            for c in console.print.call_args_list
             if len(c.args) > 0 and isinstance(c.args[0], str) and "items" in c.args[0]
         ]
         assert len(info_calls) == 1
