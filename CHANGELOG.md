@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.1] - 2026-05-12
+
+### Fixed
+
+- `cc.panel()` type stub now correctly accepts `str | RenderableType`. The
+  runtime already supported renderables (the underlying `Panel` does), but
+  the TYPE_CHECKING stub claimed `content: str` only, so passing a `Table`
+  or `Text` mypy-errored at the call site.
+
 ## [3.5.0] - 2026-05-12
 
 ### Added

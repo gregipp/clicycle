@@ -97,7 +97,7 @@ if TYPE_CHECKING:
         item_name: str, options: list[str], default: str | None = None
     ) -> str: ...
     def panel(
-        content: str,
+        content: str | RenderableType,
         title: str | None = None,
         subtitle: str | None = None,
         expand: bool | None = None,
@@ -111,7 +111,7 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.5.0"
+__version__ = "3.5.1"
 
 # Core exports
 __all__ = [
