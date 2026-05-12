@@ -3,11 +3,47 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Literal, get_args
 
 from rich import box as rich_box
 
 TitleAlign = Literal["left", "center", "right"]
+
+# Friendly string names for the Rich box styles most CLIs use. Mapped via
+# ``_resolve_box`` so callers can write ``Layout(table_box="rounded")``
+# without importing ``rich.box`` themselves.
+BoxName = Literal[
+    "ascii",
+    "ascii2",
+    "ascii_double_head",
+    "square",
+    "square_double_head",
+    "minimal",
+    "minimal_heavy_head",
+    "minimal_double_head",
+    "simple",
+    "simple_head",
+    "simple_heavy",
+    "horizontals",
+    "rounded",
+    "heavy",
+    "heavy_edge",
+    "heavy_head",
+    "double",
+    "double_edge",
+    "markdown",
+]
+
+
+def _resolve_box(name: BoxName) -> rich_box.Box:
+    """Return the ``rich.box.Box`` matching a friendly name."""
+    box = getattr(rich_box, name.upper(), None)
+    if not isinstance(box, rich_box.Box):
+        raise ValueError(
+            f"Unknown box name {name!r}. Valid names: "
+            + ", ".join(sorted(get_args(BoxName)))
+        )
+    return box
 
 
 @dataclass
@@ -107,7 +143,12 @@ class Typography:
 
 @dataclass
 class Layout:
-    """Layout configuration."""
+    """Layout configuration.
+
+    Pass a ``rich.box.Box`` directly to ``table_box`` / ``panel_box``, or
+    resolve a string name first with ``clicycle.box("rounded")`` to avoid
+    importing ``rich.box`` at the call site.
+    """
 
     # Global
     title_align: TitleAlign = "left"

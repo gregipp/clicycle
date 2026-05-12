@@ -1,8 +1,9 @@
 """Tests for the Theme system."""
 
+import pytest
 from rich import box as rich_box
 
-from clicycle import Theme
+from clicycle import Theme, box
 from clicycle.theme import ComponentSpacing, Icons, Layout, Typography
 
 
@@ -94,6 +95,18 @@ class TestLayout:
         assert layout.panel_expand is False
         assert layout.divider_style == "dim white"
         assert layout.url_style == "full"
+
+    def test_layout_accepts_box_via_clicycle_helper(self):
+        """``clicycle.box('rounded')`` returns a Box usable in Layout."""
+        layout = Layout(table_box=box("rounded"), panel_box=box("heavy_head"))
+
+        assert layout.table_box == rich_box.ROUNDED
+        assert layout.panel_box == rich_box.HEAVY_HEAD
+
+    def test_unknown_box_name_raises(self):
+        """Unknown box names raise ValueError mentioning valid names."""
+        with pytest.raises(ValueError, match="Unknown box name"):
+            box("not-a-box")
 
 
 class TestComponentSpacing:

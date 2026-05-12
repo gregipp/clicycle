@@ -164,22 +164,46 @@ cc.spacer(3)     # 3 blank lines
 
 ### Layout Configuration
 
-Control alignment, borders, and expansion through `Layout`:
+Control alignment, borders, and expansion through `Layout`. Box styles are
+`rich.box.Box` instances; resolve a friendly name with `clicycle.box(…)` so
+you don't have to import `rich.box` at the call site.
 
 ```python
-from clicycle import Theme, Layout
+from clicycle import Theme, Layout, box
 
 theme = Theme(
     layout=Layout(
         title_align="left",           # "left", "center", "right"
         table_expand=True,            # Tables fill available width
-        panel_box=rich_box.ROUNDED,   # Panel border style
+        panel_box=box("rounded"),     # rounded, heavy_head, minimal, double, …
         panel_border_style="cyan",    # Panel border color
         panel_expand=True,            # Panels fill available width
         divider_style="bright_black", # Divider color
     )
 )
 cc.configure(theme=theme)
+```
+
+### Composing Custom Renderables
+
+Clicycle re-exports the Rich primitives it wraps so you can build one-off
+tables, panels, or live-refreshing views without importing Rich directly.
+Pass any renderable to `cc.panel()`, or drive your own `Live` loop:
+
+```python
+from clicycle import Live, Panel, Table, Text, box
+import clicycle as cc
+
+table = Table(show_header=False, box=box("rounded"))
+table.add_row("status", Text("Ready", style="green"))
+
+# Static — embed in a clicycle panel:
+cc.panel(table, title="Service")
+
+# Live — refresh in place:
+with Live(Panel(table), refresh_per_second=4) as live:
+    table.add_row("uptime", Text("12s", style="cyan"))
+    live.update(Panel(table))
 ```
 
 ### Configuration

@@ -8,16 +8,33 @@ from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Any
 
+from rich.box import Box
+from rich.console import Group, RenderableType
+from rich.live import Live
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
+
 from clicycle.clicycle import Clicycle
 from clicycle.components.spinner import Spinner
 from clicycle.theme import (
+    BoxName,
     ComponentIndentation,
     ComponentSpacing,
     Icons,
     Layout,
     Theme,
     Typography,
+    _resolve_box,
 )
+
+
+def box(name: BoxName) -> Box:
+    """Resolve a friendly box name (e.g. ``"rounded"``) to a Rich ``Box``.
+
+    Lets callers build a ``Table`` or ``Panel`` without importing ``rich.box``.
+    """
+    return _resolve_box(name)
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -94,17 +111,26 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.4.2"
+__version__ = "3.5.0"
 
 # Core exports
 __all__ = [
+    "Box",
+    "BoxName",
     "Clicycle",
-    "Theme",
-    "Icons",
-    "Typography",
-    "Layout",
-    "ComponentSpacing",
     "ComponentIndentation",
+    "ComponentSpacing",
+    "Group",
+    "Icons",
+    "Layout",
+    "Live",
+    "Panel",
+    "RenderableType",
+    "Table",
+    "Text",
+    "Theme",
+    "Typography",
+    "box",
 ]
 
 

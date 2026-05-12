@@ -8,6 +8,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2026-05-12
+
+### Added
+
+- **Rich primitive re-exports.** `clicycle` now exports the Rich primitives it
+  wraps so callers can compose custom renderables without importing Rich
+  directly: `Box`, `Group`, `Live`, `Panel`, `RenderableType`, `Table`, `Text`.
+  Pass them to `cc.panel()` or stream them through your own loop:
+
+  ```python
+  from clicycle import Live, Panel, Table, Text, box
+
+  table = Table(show_header=False, box=box("rounded"))
+  table.add_row(Text("OK", style="green"))
+  with Live(Panel(table), refresh_per_second=4) as live:
+      live.update(Panel(table))
+  ```
+
+- **Friendly box-name resolver.** `clicycle.box("rounded")` resolves a string
+  name to the matching `rich.box.Box` so callers don't need to import
+  `rich.box`. Pass the result to `Layout(table_box=…)`, or to a `Table` /
+  `Panel` you build yourself.
+
+  ```python
+  from clicycle import Layout, box
+
+  Layout(table_box=box("rounded"), panel_box=box("heavy_head"))
+  ```
+
 ## [3.4.2] - 2026-02-10
 
 ### Fixed
