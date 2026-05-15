@@ -8,6 +8,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.0] - 2026-05-15
+
+### Added
+
+- **`cc.table(show_header=False)`.** Suppresses the column-name header row.
+  Use when the columns are obvious from values (status + name + tag) and the
+  extra row is noise. Backward-compatible: defaults to `True`.
+
+- **Per-call `box=` on `cc.table()` and `cc.panel()`.** Accepts a friendly
+  `BoxName` (`"rounded"`, `"simple"`, `"minimal"`, ...) or a `rich.box.Box`
+  directly. `None` (the default) keeps the theme's `table_box` / `panel_box`.
+  Lets one call deviate from the global theme without configuring a new theme.
+
+  ```python
+  cc.table(rows, box="simple", show_header=False)
+  cc.panel("Quiet note", box="minimal")
+  ```
+
+- **`cc.subsection(title)`.** Quieter h2-level header than `cc.section()`.
+  Renders just the title with the theme's `subheader_style` — no full-width
+  rule. Use inside a `cc.section()` for child groupings.
+
+- **`cc.indent(spaces)` context manager.** Indents every component rendered
+  inside the block by `spaces` columns. Nests correctly — an outer
+  `indent(2)` wrapping an inner `indent(2)` produces 4-space indent on the
+  inner content. Implementation routes inner output through
+  `Text.from_ansi` so an outer `record=True` console captures it (rather
+  than bypassing the recorder via direct `file.write`).
+
+  ```python
+  cc.section("Build")
+  with cc.indent(2):
+      cc.subsection("Compile")
+      cc.info("Compiling sources...")
+  ```
+
 ## [3.5.1] - 2026-05-12
 
 ### Fixed

@@ -3,6 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from rich import box as rich_box
 from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table as RichTable
@@ -12,6 +13,7 @@ from clicycle.components.code import Code
 from clicycle.components.header import Header
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
+from clicycle.components.subsection import Subsection
 from clicycle.components.table import Table
 from clicycle.components.text import (
     Error,
@@ -21,7 +23,7 @@ from clicycle.components.text import (
     Text,
     WarningText,
 )
-from clicycle.theme import Theme
+from clicycle.theme import Layout, Theme, Typography
 
 
 class TestBaseComponent:
@@ -553,6 +555,66 @@ class TestTable:
         ]
         assert len(info_calls) == 1
         assert "7 items" in info_calls[0].args[0]
+
+    def test_table_show_header_default_true(self):
+        """show_header defaults to True; the underlying RichTable mirrors it."""
+        theme = Theme()
+        data = [{"name": "Alice"}]
+        table = Table(theme, data)
+        rich = table._build_table(data)
+        assert rich.show_header is True
+
+    def test_table_show_header_false_suppresses_header(self):
+        """show_header=False propagates to the RichTable, hiding the header row."""
+        theme = Theme()
+        data = [{"name": "Alice"}, {"name": "Bob"}]
+        table = Table(theme, data, show_header=False)
+        rich = table._build_table(data)
+        assert rich.show_header is False
+
+    def test_table_box_override_via_string_name(self):
+        """Friendly box names (``'simple'``, ``'rounded'``) resolve per call."""
+        theme = Theme()
+        data = [{"name": "Alice"}]
+        table = Table(theme, data, box="simple")
+        assert table.box is rich_box.SIMPLE
+
+    def test_table_box_override_via_box_instance(self):
+        """A rich.box.Box passed directly is used as-is."""
+        theme = Theme()
+        data = [{"name": "Alice"}]
+        table = Table(theme, data, box=rich_box.MINIMAL)
+        assert table.box is rich_box.MINIMAL
+
+    def test_table_box_none_falls_back_to_theme(self):
+        """box=None means: use the theme's table_box."""
+        theme = Theme(layout=Layout(table_box=rich_box.HEAVY))
+        data = [{"name": "Alice"}]
+        table = Table(theme, data)
+        assert table.box is rich_box.HEAVY
+
+
+class TestSubsection:
+    """Test the Subsection component."""
+
+    def test_subsection_renders_styled_title(self):
+        """Subsection prints the title with the theme's subheader_style — no rule."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+        Subsection(theme, "Compile").render(console)
+        console.print.assert_called_once()
+        console.rule.assert_not_called()
+        printed = console.print.call_args[0][0]
+        assert "Compile" in printed
+        assert theme.typography.subheader_style in printed
+
+    def test_subsection_applies_theme_transform(self):
+        """Subsection runs the theme's subheader_transform."""
+        theme = Theme(typography=Typography(subheader_transform="upper"))
+        console = MagicMock(spec=Console)
+        Subsection(theme, "compile").render(console)
+        printed = console.print.call_args[0][0]
+        assert "COMPILE" in printed
 
 
 class TestCode:

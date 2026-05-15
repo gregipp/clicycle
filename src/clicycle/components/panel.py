@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from rich import box as rich_box
 from rich.console import Console, RenderableType
 from rich.panel import Panel as RichPanel
 
 from clicycle.components.base import Component
-from clicycle.theme import Theme
+from clicycle.theme import BoxName, Theme, _resolve_box
 
 
 class Panel(Component):
@@ -21,11 +22,15 @@ class Panel(Component):
         title: Optional title displayed at the top border
         subtitle: Optional subtitle displayed at the bottom border
         expand: Whether to expand to fill width. None uses theme default.
+        box: Per-call override for the panel box style. Accepts a friendly
+            ``BoxName`` (``"rounded"``, ``"simple"``, ...) or a ``rich.box.Box``.
+            ``None`` falls back to ``theme.layout.panel_box``.
 
     Example:
         >>> import clicycle as cc
         >>> cc.panel("System operational", title="Status")
         >>> cc.panel("Rate limit at 80%", title="Warning", subtitle="Updated 2m ago")
+        >>> cc.panel("Quiet note", box="simple")
     """
 
     component_type = "panel"
@@ -37,12 +42,19 @@ class Panel(Component):
         title: str | None = None,
         subtitle: str | None = None,
         expand: bool | None = None,
+        box: BoxName | rich_box.Box | None = None,
     ):
         super().__init__(theme)
         self.content = content
         self.title = title
         self.subtitle = subtitle
         self.expand = expand if expand is not None else theme.layout.panel_expand
+        if box is None:
+            self.box = theme.layout.panel_box
+        elif isinstance(box, str):
+            self.box = _resolve_box(box)
+        else:
+            self.box = box
 
     def render(self, console: Console) -> None:
         """Render the panel with theme-configured styling.
@@ -56,7 +68,7 @@ class Panel(Component):
             title_align=self.theme.layout.title_align,
             subtitle=self.subtitle,
             subtitle_align="right",  # Subtitle stays right (e.g. timestamps)
-            box=self.theme.layout.panel_box,
+            box=self.box,
             border_style=self.theme.layout.panel_border_style,
             expand=self.expand,
         )

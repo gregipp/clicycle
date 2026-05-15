@@ -79,3 +79,21 @@ class TestPanel:
         theme = Theme()
         panel = Panel(theme, "Content")
         assert panel.component_type == "panel"
+
+    def test_panel_box_override_via_string_name(self):
+        """Friendly box names resolve per call, regardless of theme."""
+        theme = Theme(layout=Layout(panel_box=rich_box.ROUNDED))
+        panel = Panel(theme, "Content", box="simple")
+        assert panel.box is rich_box.SIMPLE
+
+    def test_panel_box_override_via_box_instance(self):
+        """A rich.box.Box passed directly is used as-is."""
+        theme = Theme(layout=Layout(panel_box=rich_box.ROUNDED))
+        panel = Panel(theme, "Content", box=rich_box.HEAVY)
+        assert panel.box is rich_box.HEAVY
+
+    def test_panel_box_none_falls_back_to_theme(self):
+        """box=None keeps the theme's panel_box."""
+        theme = Theme(layout=Layout(panel_box=rich_box.DOUBLE))
+        panel = Panel(theme, "Content")
+        assert panel.box is rich_box.DOUBLE

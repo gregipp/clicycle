@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from contextlib import contextmanager
 
+    from rich.box import Box as _RichBox
     from rich.console import Console as _Console
 
     console: _Console
@@ -58,11 +59,17 @@ if TYPE_CHECKING:
     def debug(message: str) -> None: ...
     def list_item(message: str) -> None: ...
     def section(title: str) -> None: ...
+    def subsection(title: str) -> None: ...
     def table(
         data: list[dict[str, Any]],
         title: str | None = None,
+        column_widths: dict[str, int] | None = None,
+        wrap_text: bool = True,
+        expand: bool | None = None,
+        width: int | None = None,
         page_size: int | None = None,
-        **kwargs: Any,
+        show_header: bool = True,
+        box: BoxName | _RichBox | None = None,
     ) -> None: ...
     def header(
         title: str,
@@ -83,6 +90,8 @@ if TYPE_CHECKING:
     def multi_progress(description: str = "Processing") -> Any: ...
     @contextmanager
     def group() -> Iterator[Clicycle]: ...
+    @contextmanager
+    def indent(spaces: int) -> Iterator[Clicycle]: ...
     def prompt(text: str, **kwargs: Any) -> Any: ...
     def confirm(text: str, **kwargs: Any) -> bool: ...
     def select(
@@ -101,6 +110,7 @@ if TYPE_CHECKING:
         title: str | None = None,
         subtitle: str | None = None,
         expand: bool | None = None,
+        box: BoxName | _RichBox | None = None,
     ) -> None: ...
     def key_value(
         data: dict[str, str | int | float | bool | None]
@@ -111,7 +121,7 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.5.1"
+__version__ = "3.6.0"
 
 # Core exports
 __all__ = [
@@ -292,13 +302,19 @@ class _ModuleInterface(ModuleType):
         return None
 
     def _handle_group_function(self, name: str) -> Any:
-        """Handle group context manager."""
+        """Handle group / indent context managers — both live on ``Clicycle``."""
         if name == "group":
 
             def group_wrapper() -> Any:
                 return self._cli.group()
 
             return group_wrapper
+        if name == "indent":
+
+            def indent_wrapper(spaces: int) -> Any:
+                return self._cli.indent(spaces)
+
+            return indent_wrapper
         return None
 
     def _handle_prompt_functions(self, name: str) -> Any:

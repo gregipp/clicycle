@@ -5,11 +5,12 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from rich import box as rich_box
 from rich.console import Console
 from rich.table import Table as RichTable
 
 from clicycle.components.base import Component
-from clicycle.theme import Theme
+from clicycle.theme import BoxName, Theme, _resolve_box
 
 
 class Table(Component):
@@ -24,6 +25,10 @@ class Table(Component):
         expand: Whether to expand table to fill available width (default: False)
         width: Fixed width for the table (default: None, uses content width)
         page_size: Number of rows per page (None = no pagination)
+        show_header: Whether to render the column-name header row (default: True)
+        box: Per-call override for the table box style. Accepts a friendly
+            ``BoxName`` (``"rounded"``, ``"simple"``, ...) or a ``rich.box.Box``.
+            ``None`` falls back to ``theme.layout.table_box``.
     """
 
     component_type = "table"
@@ -38,6 +43,8 @@ class Table(Component):
         expand: bool | None = None,
         width: int | None = None,
         page_size: int | None = None,
+        show_header: bool = True,
+        box: BoxName | rich_box.Box | None = None,
     ):
         super().__init__(theme)
         self.data = data
@@ -47,6 +54,13 @@ class Table(Component):
         self.expand = expand if expand is not None else theme.layout.table_expand
         self.width = width
         self.page_size = page_size
+        self.show_header = show_header
+        if box is None:
+            self.box = theme.layout.table_box
+        elif isinstance(box, str):
+            self.box = _resolve_box(box)
+        else:
+            self.box = box
 
     def _build_table(
         self, rows: list[dict[str, str | int | float | bool | None]]
@@ -55,12 +69,13 @@ class Table(Component):
         table = RichTable(
             title=self.title,
             title_justify=self.theme.layout.title_align,
-            box=self.theme.layout.table_box,
+            box=self.box,
             border_style=self.theme.layout.table_border_style,
             title_style=self.theme.typography.header_style,
             header_style=self.theme.typography.label_style,
             expand=self.expand,
             width=self.width,
+            show_header=self.show_header,
         )
 
         columns = list(self.data[0].keys())

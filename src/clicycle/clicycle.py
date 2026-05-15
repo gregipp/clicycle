@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import io
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
 from rich.console import Console
+from rich.text import Text
 
 from clicycle.rendering.stream import RenderStream
 from clicycle.theme import Theme
@@ -58,6 +60,71 @@ class Clicycle:
         """
         self.console.clear()
         self.stream.clear_history()
+
+    @contextmanager
+    def indent(self, spaces: int) -> Iterator[Clicycle]:
+        """Indent every component rendered inside the block by ``spaces``.
+
+        Each component renders normally (spacing rules, styles, colors), and
+        on exit the buffered output is re-emitted to the real console with a
+        leading-space prefix on every line. Nesting works: an outer
+        ``indent(2)`` wrapping an inner ``indent(2)`` indents inner content by
+        4 in total because both buffers replay through the parent.
+
+        Args:
+            spaces: Indent width. ``0`` or negative is a no-op.
+
+        Yields:
+            Self for use within the context.
+
+        Example:
+            >>> import clicycle as cc
+            >>> cc.section("Build")
+            >>> with cc.indent(2):
+            ...     cc.info("Compiling")
+            ...     cc.info("Linking")
+        """
+        if spaces <= 0:
+            yield self
+            return
+
+        original_stream = self.stream
+        original_console = self.console
+
+        buffer = io.StringIO()
+        # ``force_terminal=True`` is what gets us styled output (truecolor
+        # ANSI in the buffer) even though the file is a StringIO. We don't
+        # forward ``original_console.color_system`` — Rich's auto-detect under
+        # force_terminal lands on the right setting and the stub's
+        # ``str | None`` typing of ``Console.color_system`` doesn't match the
+        # ``Literal[...] | None`` the constructor expects.
+        buffer_console = Console(
+            file=buffer,
+            width=max(1, self.width - spaces),
+            force_terminal=True,
+            record=True,
+        )
+        self.console = buffer_console
+        self.stream = RenderStream(buffer_console)
+
+        try:
+            yield self
+        finally:
+            self.console = original_console
+            self.stream = original_stream
+
+            captured = buffer_console.export_text(styles=True, clear=True)
+            prefix = " " * spaces
+            for line in captured.splitlines():
+                # ``Text.from_ansi`` parses ANSI escape codes back into a
+                # styled ``Text`` object, then ``console.print`` re-emits it
+                # via ``_write_buffer``. That path matters: it's what feeds
+                # an outer ``record=True`` console, so nested ``indent``
+                # blocks compose correctly. A direct ``file.write`` would
+                # bypass the recorder and lose inner content.
+                original_console.print(
+                    Text.from_ansi(f"{prefix}{line}") if line else Text(prefix)
+                )
 
     @contextmanager
     def group(self) -> Iterator[Clicycle]:
