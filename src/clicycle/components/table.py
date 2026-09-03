@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from typing import Any
 
 from rich import box as rich_box
@@ -22,10 +23,18 @@ class Table(Component):
         title: Optional table title
         column_widths: Optional dict mapping column names to widths
         wrap_text: Whether to wrap text or use ellipsis (default: True)
+        no_wrap: Names of columns that never wrap. When the console is too
+            narrow for every column, Rich shrinks the wrapping columns first,
+            so identifiers (names, ids, hashes, ages) stay on one line and a
+            prose column folds instead. A column listed here that still does
+            not fit is cut with an ellipsis.
         expand: Whether to expand table to fill available width (default: False)
         width: Fixed width for the table (default: None, uses content width)
         page_size: Number of rows per page (None = no pagination)
         show_header: Whether to render the column-name header row (default: True)
+        show_edge: Whether to render the box's top and bottom edges
+            (default: True). ``False`` drops the blank or ruled lines that
+            frame a ``"simple"`` table, for an aligned block with no frame.
         box: Per-call override for the table box style. Accepts a friendly
             ``BoxName`` (``"rounded"``, ``"simple"``, ...) or a ``rich.box.Box``.
             ``None`` falls back to ``theme.layout.table_box``.
@@ -40,10 +49,12 @@ class Table(Component):
         title: str | None = None,
         column_widths: dict[str, int] | None = None,
         wrap_text: bool = True,
+        no_wrap: Sequence[str] = (),
         expand: bool | None = None,
         width: int | None = None,
         page_size: int | None = None,
         show_header: bool = True,
+        show_edge: bool = True,
         box: BoxName | rich_box.Box | None = None,
     ):
         super().__init__(theme)
@@ -51,10 +62,12 @@ class Table(Component):
         self.title = title
         self.column_widths = column_widths or {}
         self.wrap_text = wrap_text
+        self.no_wrap = frozenset(no_wrap)
         self.expand = expand if expand is not None else theme.layout.table_expand
         self.width = width
         self.page_size = page_size
         self.show_header = show_header
+        self.show_edge = show_edge
         if box is None:
             self.box = theme.layout.table_box
         elif isinstance(box, str):
@@ -76,17 +89,19 @@ class Table(Component):
             expand=self.expand,
             width=self.width,
             show_header=self.show_header,
+            show_edge=self.show_edge,
         )
 
         columns = list(self.data[0].keys())
         for key in columns:
             column_name = str(key)
             col_width = self.column_widths.get(column_name)
+            wraps = self.wrap_text and column_name not in self.no_wrap
             table.add_column(
                 column_name,
                 width=col_width,
-                no_wrap=not self.wrap_text,
-                overflow="fold" if self.wrap_text else "ellipsis",
+                no_wrap=not wraps,
+                overflow="fold" if wraps else "ellipsis",
             )
 
         for row in rows:

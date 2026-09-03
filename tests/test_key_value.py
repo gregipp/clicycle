@@ -1,5 +1,6 @@
 """Tests for the KeyValue component."""
 
+import io
 from unittest.mock import MagicMock
 
 from rich.console import Console
@@ -67,6 +68,19 @@ class TestKeyValue:
 
         rendered = console.print.call_args[0][0]
         assert rendered.box is None
+
+    def test_key_value_long_value_folds(self):
+        """A value wider than the console folds instead of being cut short."""
+        theme = Theme()
+        console = Console(width=30, file=io.StringIO(), force_terminal=False)
+
+        KeyValue(
+            theme, {"Context": "connectgateway_presyn-staging_global_stage"}
+        ).render(console)
+
+        output = console.file.getvalue()
+        assert "…" not in output
+        assert "".join(output.split()).endswith("global_stage")
 
     def test_key_value_component_type(self):
         """Test key_value has correct component_type."""

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Any
@@ -36,6 +37,7 @@ def box(name: BoxName) -> Box:
     """
     return _resolve_box(name)
 
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from contextlib import contextmanager
@@ -65,10 +67,12 @@ if TYPE_CHECKING:
         title: str | None = None,
         column_widths: dict[str, int] | None = None,
         wrap_text: bool = True,
+        no_wrap: Sequence[str] = (),
         expand: bool | None = None,
         width: int | None = None,
         page_size: int | None = None,
         show_header: bool = True,
+        show_edge: bool = True,
         box: BoxName | _RichBox | None = None,
     ) -> None: ...
     def header(
@@ -121,7 +125,7 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.6.0"
+__version__ = "3.7.0"
 
 # Core exports
 __all__ = [

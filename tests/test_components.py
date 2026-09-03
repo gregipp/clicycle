@@ -1,5 +1,6 @@
 """Unit tests for clicycle components."""
 
+import io
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -592,6 +593,39 @@ class TestTable:
         data = [{"name": "Alice"}]
         table = Table(theme, data)
         assert table.box is rich_box.HEAVY
+
+    def test_table_no_wrap_pins_named_columns(self):
+        """Columns named in no_wrap never wrap; the others still fold."""
+        theme = Theme()
+        data = [{"id": "a1b2c3d", "state": "waiting on a very long message"}]
+        table = Table(theme, data, no_wrap=("id",))
+        rich = table._build_table(data)
+        pinned, folding = rich.columns
+        assert pinned.no_wrap is True
+        assert pinned.overflow == "ellipsis"
+        assert folding.no_wrap is False
+        assert folding.overflow == "fold"
+
+    def test_table_no_wrap_keeps_a_pinned_column_on_one_line(self):
+        """In a narrow console the pinned column holds and the prose folds."""
+        theme = Theme()
+        data = [{"id": "a1b2c3d", "state": "waiting on a very long message"}]
+        console = Console(width=30, file=io.StringIO(), force_terminal=False)
+        Table(theme, data, no_wrap=("id",), show_header=False).render(console)
+        output = console.file.getvalue()
+        rows = [line for line in output.splitlines() if "│" in line]
+        assert len(rows) == 3
+        assert "a1b2c3d" in rows[0] and "waiting" in rows[0]
+        assert all("a1b2c3d" not in row for row in rows[1:])
+        assert "…" not in output
+
+    def test_table_show_edge_false_drops_the_frame(self):
+        """show_edge=False propagates to the RichTable."""
+        theme = Theme()
+        data = [{"name": "Alice"}]
+        table = Table(theme, data, show_edge=False)
+        rich = table._build_table(data)
+        assert rich.show_edge is False
 
 
 class TestSubsection:

@@ -130,6 +130,12 @@ cc.table(data, column_widths={"ID": 40, "Name": 20, "Description": 60})
 cc.table(data, wrap_text=True)   # Allow text wrapping (default)
 cc.table(data, wrap_text=False)  # Use ellipsis for long text
 
+# Pin identifier columns so a narrow console folds the prose column instead
+cc.table(data, no_wrap=("Service", "Release"))
+
+# Aligned block with no frame: no header row, no top or bottom edge
+cc.table(data, box="simple", show_header=False, show_edge=False)
+
 # Combined options
 cc.table(
     data,

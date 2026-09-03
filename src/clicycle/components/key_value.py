@@ -13,7 +13,8 @@ class KeyValue(Component):
     """Dashboard-style key-value pair display using a borderless table.
 
     Renders aligned label:value pairs. Labels use the theme's label_style,
-    values use the theme's value_style.
+    values use the theme's value_style. A value wider than the remaining
+    width folds onto further lines, so an identifier is never cut short.
 
     Args:
         theme: Theme configuration for styling
@@ -64,7 +65,7 @@ class KeyValue(Component):
             expand=False,
         )
         table.add_column(style=self.theme.typography.label_style)
-        table.add_column(style=self.theme.typography.value_style)
+        table.add_column(style=self.theme.typography.value_style, overflow="fold")
 
         for key, value in pairs:
             table.add_row(key, value)

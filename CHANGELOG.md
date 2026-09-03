@@ -8,6 +8,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] - 2026-09-03
+
+### Added
+
+- **`cc.table(no_wrap=(...))`.** Names the columns that never wrap. When the
+  console is too narrow for every column, Rich shrinks the wrapping columns
+  first, so identifiers (names, ids, hashes, ages) stay on one line and the
+  prose column folds. A pinned column that still does not fit is cut with an
+  ellipsis. Default `()` keeps every column wrapping as before.
+
+  ```python
+  cc.table(rows, no_wrap=("Service", "Release", "Gitops"))
+  ```
+
+- **`cc.table(show_edge=False)`.** Drops the box's top and bottom edges. With
+  `box="simple"` and `show_header=False` this renders an aligned block with
+  no frame and no blank lines around it. Default `True`.
+
+### Changed
+
+- **`cc.key_value()` values fold instead of being cut short.** A value wider
+  than the remaining width now continues on further lines; before, a long
+  single token (a path, a context name) ended in an ellipsis.
+
 ## [3.6.0] - 2026-05-15
 
 ### Added
