@@ -120,6 +120,15 @@ The `table` function supports advanced formatting options:
 # Basic table
 cc.table([{"Name": "Alice", "Age": 30}])
 
+# Semantic status cells use the configured Clicycle icons and styles
+cc.table(
+    [
+        {"Check": "Database", "Status": cc.Status.success("connected")},
+        {"Check": "Cache", "Status": cc.Status.warning("nearly full")},
+        {"Check": "Queue", "Status": cc.Status.error("unreachable")},
+    ]
+)
+
 # Table with title
 cc.table(data, title="User List")
 

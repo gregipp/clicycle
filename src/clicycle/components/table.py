@@ -9,9 +9,13 @@ from typing import Any
 from rich import box as rich_box
 from rich.console import Console
 from rich.table import Table as RichTable
+from rich.text import Text
 
 from clicycle.components.base import Component
+from clicycle.table_status import Status
 from clicycle.theme import BoxName, Theme, _resolve_box
+
+TableValue = str | int | float | bool | None | Status
 
 
 class Table(Component):
@@ -45,7 +49,7 @@ class Table(Component):
     def __init__(
         self,
         theme: Theme,
-        data: list[dict[str, str | int | float | bool | None]],
+        data: list[dict[str, TableValue]],
         title: str | None = None,
         column_widths: dict[str, int] | None = None,
         wrap_text: bool = True,
@@ -75,9 +79,7 @@ class Table(Component):
         else:
             self.box = box
 
-    def _build_table(
-        self, rows: list[dict[str, str | int | float | bool | None]]
-    ) -> RichTable:
+    def _build_table(self, rows: list[dict[str, TableValue]]) -> RichTable:
         """Build a Rich table from a slice of rows."""
         table = RichTable(
             title=self.title,
@@ -105,9 +107,14 @@ class Table(Component):
             )
 
         for row in rows:
-            table.add_row(*[str(row.get(key, "")) for key in columns])
+            table.add_row(*[self._render_cell(row.get(key, "")) for key in columns])
 
         return table
+
+    def _render_cell(self, value: TableValue) -> str | Text:
+        if isinstance(value, Status):
+            return value.render(self.theme)
+        return str(value)
 
     def render(self, console: Console) -> None:
         """Render data as a table, with optional pagination."""

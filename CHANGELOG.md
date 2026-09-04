@@ -8,6 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.0] - 2026-09-03
+
+### Added
+
+- **Semantic table status values.** `cc.Status.success()`,
+  `cc.Status.warning()`, and `cc.Status.error()` let table cells declare their
+  status while Clicycle supplies the configured icon and styles.
+
+  ```python
+  cc.table(
+      [
+          {"Check": "Database", "Status": cc.Status.success("connected")},
+          {"Check": "Cache", "Status": cc.Status.warning("nearly full")},
+          {"Check": "Queue", "Status": cc.Status.error("unreachable")},
+      ]
+  )
+  ```
+
 ## [3.7.0] - 2026-09-03
 
 ### Added

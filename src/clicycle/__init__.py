@@ -18,6 +18,7 @@ from rich.text import Text
 
 from clicycle.clicycle import Clicycle
 from clicycle.components.spinner import Spinner
+from clicycle.table_status import Status
 from clicycle.theme import (
     BoxName,
     ComponentIndentation,
@@ -125,7 +126,7 @@ if TYPE_CHECKING:
     def divider() -> None: ...
 
 
-__version__ = "3.7.0"
+__version__ = "3.8.0"
 
 # Core exports
 __all__ = [
@@ -140,6 +141,7 @@ __all__ = [
     "Live",
     "Panel",
     "RenderableType",
+    "Status",
     "Table",
     "Text",
     "Theme",
